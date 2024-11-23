@@ -1,48 +1,53 @@
-import unittest
-from main import add, subtract, multiply, divide, check
+import pytest
+from main import check, is_palindrom, sort_list
+from new import init_db, add_user, get_user
 
-class TestMath(unittest.TestCase):
-    def test_add(self):
-        self.assertEqual(add(2, 5), 7)
-        self.assertNotEqual(add(3, 7), 9)
+def test_check():
+    assert check(6) == True
 
-    def test_subtract(self):
-        self.assertEqual(subtract(7, 4), 3)
-        self.assertNotEqual(subtract(4, 2), 1)
+def test_check2():
+    assert check(3) == False
 
-    def test_multiply(self):
-        self.assertNotEqual(multiply(2, 5), 12)
-        self.assertEqual(multiply(3, 6), 18)
+@pytest.mark.parametrize("number, expected", [
+    (2, True),
+    (5, False),
+    (0, True),
+    (56, True),
+    (-3, False)
+])
+def test_check_with_param(number, expected):
+    assert check(number) == expected
 
-    def test_divide(self):
-        self.assertNotEqual(divide(4, 2), 3)
-        self.assertEqual(divide(20, 5), 4)
+def test_is_palindrom_true():
+    assert is_palindrom("madam") == True
 
-class TestCheck(unittest.TestCase):
-    def test_check(self):
-        self.assertTrue(check(2))
-        self.assertTrue(check(6))
-        self.assertTrue(check(220))
+def test_is_palindrom_false():
+    assert is_palindrom("hello") == False
 
-        self.assertTrue(not check(1))
-        self.assertTrue(not check(3))
-        self.assertTrue(not check(57))
+@pytest.mark.parametrize("test_input, result", [
+    ('level', True),
+    ('python', False),
+    ('racecar', True),
+    ('', True)
+])
 
-        self.assertFalse(check(1))
-        self.assertFalse(check(3))
-        self.assertFalse(check(57))
+def test_is_palindrom(test_input, result):
+    assert is_palindrom(test_input) == result
 
-class TestDivide(unittest.TestCase):
-    def test_divide_success(self):
-        self.assertEqual(divide(10, 2), 5)
+def test_sort1():
+    assert sort_list([5, 6, 3, 1, 2]) == [1, 2, 3, 5, 6]
 
-        self.assertEqual(divide(6, 3), 2)
-        self.assertEqual(divide(70, 2), 35)
-
-    def test_divide_by_zero(self):
-        self.assertRaises(ValueError, divide, 6, 0)
-        # self.assertRaises(TypeError, divide, 6, 0)
+def test_sort2():
+    assert sort_list([-1, 3, 0, -2, 2]) == [-2, -1, 0, 2, 3]
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.fixture()
+def db_conn():
+    conn = init_db()
+    yield conn
+    conn.close()
+
+def test_add_or_get_user(db_conn):
+    add_user(db_conn, "Sasha", 30)
+    user = get_user(db_conn, "Sasha")
+    assert user == (1, "Sasha", 30)
