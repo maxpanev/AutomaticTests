@@ -1,6 +1,6 @@
 import pytest
-from main import check, is_palindrom, sort_list
-from new import init_db, add_user, get_user
+from UnitTest import check, is_palindrom, sort_list
+from PyTest import init_db, add_user, get_user
 
 def test_check():
     assert check(6) == True

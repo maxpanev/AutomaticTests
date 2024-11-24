@@ -6,4 +6,3 @@ def is_palindrom(s):
 
 def sort_list(numbers):
     return sorted(numbers)
-
